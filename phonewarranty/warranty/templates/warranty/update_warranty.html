@@ -1,0 +1,12 @@
+{% extends 'warranty/base.html' %}
+
+{% block content %}
+<h4 style="margin-left: 40px; margin-top: 20px">Cập nhật bảo hành</h4>
+<div class="table-responsive" style="margin: auto; margin-top: 20px; margin-bottom: 50px; width: 95%;">
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-outline-danger">Cập nhật</button>
+    <button class="btn btn-outline-danger" onclick="location.href='{% url 'warranty_list'%}'" type="button">Hủy</button>
+  </form>
+{% endblock %}

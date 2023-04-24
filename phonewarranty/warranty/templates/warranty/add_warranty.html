@@ -1,48 +1,16 @@
 {% extends 'warranty/base.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}"> 
+
 
 {% block content %}
-<div class="container" style="display: flex">
-
-  <div class="row">
-    <div class="col-md-12">
-      <h4 style="margin-left: 40px; margin-top: 20px">Chi tiết thiết bị</h4>
-      <div class="table-responsive" style="margin: auto; margin-top: 20px; width: 95%;">
-        <table class="table align-middle table-striped">
-          <thead class="table-danger">
-              <tr>
-                  <th>Serial</th>
-                  <th>Tên thiết bị</th>
-                  <th>Ngày bắt đầu bảo hành</th>
-                  <th>Ngày kết thúc bảo hành</th>
-                  <th>Nhà cung cấp</th>
-                  <th>Mô tả</th>
-              </tr>
-          </thead>
-          <tbody>
-            {% for warranty in warranties %}
-            <tr>
-              <td>{{ warranty.serial }}</td>
-              <td>{{ warranty.name }}</td>
-              <td>{{ warranty.start_date }}</td>
-              <td>{{ warranty.end_date }}</td>
-              <td>{{ warranty.NCC }}</td>
-              <td>{{ warranty.description }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-    </div>
-  </div>
-
-  <div style="margin-top: 20px; margin-left: 40px;">
-    <h4 >Cập nhật thiết bị</h4>
-    <form method="post">
+    <div class="box" style="margin-top: 20px; margin-bottom: 20px;">
+      <h4 style="text-align: center; margin-top: 10px; margin-bottom: 10px;">Thêm bảo hành</h4>
+      <form style="margin-left: 190px;" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
-        <button class="btn btn-outline-danger" type="submit">Cập nhật</button>
         <button class="btn btn-outline-danger" type="submit">Thêm</button>
-    </form>
-  </div>
-
-
+        <button class="btn btn-outline-danger" onclick="location.href='{% url 'warranty_list'%}'" type="button">Hủy</button>
+      </form>
+    </div>
 {% endblock %}

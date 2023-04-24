@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+{% include 'chartjs/chart.html' with chart=chart %}
+{% endblock %}
+
+{% block extra_js %}
+{{ chartjs_config(chart) }}
+{% endblock %}

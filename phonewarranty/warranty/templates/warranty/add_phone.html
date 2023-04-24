@@ -1,14 +1,16 @@
 {% extends 'warranty/base.html' %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}">
+<link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}"> 
+
 
 {% block content %}
-    <h4 style="text-align: center; margin-top: 50px; margin-bottom: 20px;">Thêm Thiết Bị</h4>
-    <div class="box">
-      <form style="margin-left: 190px;" method="post">
+    <div class="box" style="margin-top: 20px; margin-bottom: 20px;">
+      <h4 style="text-align: center; margin-top: 10px; margin-bottom: 10px;">Thêm Thiết Bị</h4>
+      <form style="margin-left: 190px;" method="POST">
         {% csrf_token %}
         {{ form.as_p }}
         <button class="btn btn-outline-danger" type="submit">Thêm</button>
+        <button class="btn btn-outline-danger" onclick="location.href='{% url 'phone_list'%}'" type="button">Hủy</button>
       </form>
     </div>
 {% endblock %}

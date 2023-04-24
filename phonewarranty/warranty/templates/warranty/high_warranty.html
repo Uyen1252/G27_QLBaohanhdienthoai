@@ -1,0 +1,27 @@
+{% extends 'warranty/base.html' %}
+
+{% block content %}
+    <h4 style="margin-left: 40px; margin-top: 20px">Danh sách các dòng sản phẩm thường nhận bảo hành</h4>
+    <div class="table-responsive" style="margin: auto; margin-top: 20px; width: 95%;">
+      <table class="table align-middle table-striped">
+        <thead class="table-danger">
+            <tr>
+              <th>Tên sản phẩm</th>
+              <th>Số lần bảo hành</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for warranty in warranties %}
+              <tr>
+                <td>{{ warranty.name }}</td>
+                <td>{{ warranty.name_count }}</td>
+              </tr>
+          {% empty %}
+              <tr>
+                <td colspan="2">Không có sản phẩm nào được bảo hành nhiều lần</td>
+              </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'warranty/base.html' %}
+{%load static %}
+{% block content %}
+    <h4 style="margin-left: 40px; margin-top: 20px">Danh sách thiết bị</h4>
+    <div class="table-responsive" style="margin: auto; margin-top: 50px; width: 95%;">
+      <table class="table align-middle table-striped">
+        <thead class="table-danger">
+            <tr>
+                <th>Serial</th>
+                <th>Tên thiết bị</th>
+                <th>Ngày bắt đầu bảo hành</th>
+                <th>Ngày kết thúc bảo hành</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for phone in phones %}
+          <tr>
+            <td>{{ phone.serial }}</td>
+            <td>{{ phone.name }}</td>
+            <td>{{ phone.start_date }}</td>
+            <td>{{ phone.end_date }}</td>
+            <td>
+              <button class="btn btn-outline-danger" onclick="location.href='{% url 'add_warranty' phone.id %}'" type="button">Cập nhật</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+  
+
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          <li class="page-item"> 
+            <a class="page-link text-danger" href="#" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li class="page-item"><a class="page-link text-danger" href="#">1</a></li>
+          <li class="page-item"><a class="page-link text-danger" href="#">2</a></li>
+          <li class="page-item"><a class="page-link text-danger" href="#">3</a></li>
+          <li class="page-item">
+            <a class="page-link text-danger" href="#" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    
+{% endblock %}
+
+

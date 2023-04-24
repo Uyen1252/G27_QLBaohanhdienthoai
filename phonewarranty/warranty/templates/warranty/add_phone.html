@@ -1,0 +1,14 @@
+{% extends 'warranty/base.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}">
+
+{% block content %}
+    <h4 style="text-align: center; margin-top: 50px; margin-bottom: 20px;">Thêm Thiết Bị</h4>
+    <div class="box">
+      <form style="margin-left: 190px;" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-outline-danger" type="submit">Thêm</button>
+      </form>
+    </div>
+{% endblock %}

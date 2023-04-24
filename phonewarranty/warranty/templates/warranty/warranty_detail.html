@@ -1,0 +1,48 @@
+{% extends 'warranty/base.html' %}
+{%load static %}
+
+{% block content %}
+  <h4 style="margin-left: 40px; margin-top: 20px">Chi tiết thiết bị</h4>
+  <div style="margin: auto; margin-top: 40px; width: 95%;">
+    <form class="row g-4">
+      <div class="row g-4 col-md-10">
+        <div class="col-md-2">
+          <label for="inputSerial" class="form-label">Serial</label>
+          <input class = "form-control form-control-sm me-2 border border-danger" type="text" class="form-control" id="inputSerial" >
+        </div>
+        <div class="col-md-6 ">
+          <label for="inputName" class="form-label">Tên thiết bị</label>
+          <input class = "form-control form-control-sm me-2 border border-danger" type="text" class="form-control" id="inputName">
+        </div>
+      </div>
+      <div class="row g-4 col-md-10">
+        <div class="col-md-4">
+          <label for="inputStartDate" class="form-label">Ngày bắt đầu bảo hành</label>
+          <input class = "form-control form-control-sm me-2 border border-danger" type="datetime-local" class="form-control" id="inputStartDate">
+        </div>
+        <div class="col-md-4">
+          <label for="inputEndDate" class="form-label">Ngày kết thúc bảo hành</label>
+          <input class = "form-control form-control-sm me-2 border border-danger" type="datetime-local" class="form-control" id="inputEndDate">
+        </div>
+      </div>
+      <div class="row g-4 col-md-10">
+        <div class="col-md-4 ">
+          <label for="inputNCC" class="form-label">Nhà cung cấp</label>
+            <select id="inputNCC" class="form-select form-control form-control-sm me-2 border border-danger">
+              <option selected>Công ty A</option>
+              <option>Công ty B</option>
+              <option>Công ty C</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+          <label for="inputNote" class="form-label">Ghi chú</label>
+          <input class = "form-control form-control-sm me-2 border border-danger" type="text" class="form-control" id="inputNote">
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary" style="margin-top: 30px">Cập nhật</button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+{% endblock %}

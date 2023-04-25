@@ -12,26 +12,80 @@
       <table class="table align-middle table-striped">
         <thead class="table-danger">
             <tr>
-              <th>Mã Khách Hàng</th>
-              <th>Tên thiết bị</th>
+              <th>
+                <div class="btn-group" style="height: 30px; ">
+                  <div style="text-align: center;">
+                    Tên khách hàng
+                    <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=name_KH_asc">Sắp xếp (A-Z)</a></li>
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=name_KH_desc">Sắp xếp (Z-A)</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </th>
+              <th>Số điện thoại</th>
+              <th>
+                <div class="btn-group" style="height: 30px; ">
+                  <div style="text-align: center;">
+                    Tên hãng
+                    <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=name_hang_desc">Sắp xếp (A-Z)</a></li>
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=name_hang_asc">Sắp xếp (Z-A)</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="btn-group" style="height: 30px; ">
+                  <div style="text-align: center;">
+                    Tên thiết bị
+                    <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=name_asc">Sắp xếp (A-Z)</a></li>
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=name_desc">Sắp xếp (Z-A)</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </th>
               <th>Ngày nhận bảo hành</th>
               <th>Ngày trả bảo hành</th>
-              <th>Nhà cung cấp</th>
-              <th>Mô tả</th>
+              <th>
+                <div class="btn-group" style="height: 30px; ">
+                  <div style="text-align: center;">
+                    Nhà cung cấp
+                    <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=NCC_asc">Sắp xếp(A-Z)</a></li>
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=NCC_desc">Sắp xếp (Z-A)</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </th>
               <th></th>
             </tr>
         </thead>
         <tbody>
           {% for warranty in warranties %}
           <tr>
-            <td>{{ warranty.MKH }}</td>
+            <td>{{ warranty.name_KH }}</td>
+            <td>{{ warranty.phone_number }}</td>
+            <td>{{ warranty.name_hang }}</td>
             <td>{{ warranty.name }}</td>
             <td>{{ warranty.start_date }}</td>
             <td>{{ warranty.end_date }}</td>
             <td>{{ warranty.NCC }}</td>
-            <td style="max-width: 300px;">{{ warranty.description }}</td>
             <td>
-              <button class="btn btn-outline-danger" onclick="location.href='{% url 'update_warranty' warranty.id %}'" type="button">Cập nhật</button>
+              <button class="btn btn-outline-danger" onclick="location.href='{% url 'update_warranty' warranty.id %}'" type="button">Chi tiết</button>
               <button class="btn btn-outline-danger" onclick="if (confirm('Bạn có chắc chắn muốn xóa bảo hành này không?')) { location.href=' {% url 'delete_warranty' warranty.id %}'; }" type="button">Xóa</button>
             </td>
           </tr>

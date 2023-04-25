@@ -14,7 +14,6 @@ urlpatterns = [
     path('search_warranty/', views.search_warranty, name='search_warranty'),
     path('expired_warranty/', views.expired_warranty, name='expired_warranty'),
     path('high_warranty/', views.high_warranty, name='high_warranty'),
-     path('high_warranty_chart/', views.HighWarrantyChartView, name='high_warranty_chart'),
     
 ]
 

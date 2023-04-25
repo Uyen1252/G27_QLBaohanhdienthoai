@@ -13,10 +13,37 @@
         <thead class="table-danger">
             <tr>
                 <th>Serial</th>
-                <th>Tên thiết bị</th>
+                <th> 
+                  <div class="btn-group" style="height: 30px; ">
+                    <div style="text-align: center;">
+                      Tên thiết bị
+                      <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_desc">Sắp xếp (A-Z)</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_asc">Sắp xếp (Z-A)</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </th>
                 <th>Ngày bắt đầu bảo hành</th>
                 <th>Ngày kết thúc bảo hành</th>
-                <th>Tình trạng bảo hành</th>
+                <th>
+                  <div class="btn-group" style="height: 30px; ">
+                    <div style="text-align: center;">
+                      Tình trạng bảo hành
+                      <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=all">Tất cả</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=warranty">Còn hạn bảo hành</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=no_warranty">Hết hạn bảo hành</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </th>
                 <th></th>
             </tr>
         </thead>
@@ -29,13 +56,14 @@
             <td>{{ phone.end_date }}</td>
             <td>{{ phone.warranty_status }}</td>
             <td>
-              <button class="btn btn-outline-danger" onclick="location.href='{% url 'update_phone' phone.id %}'" type="button">Cập nhật</button>
+              <button class="btn btn-outline-danger" onclick="location.href='{% url 'update_phone' phone.id %}'" type="button">Chi tiết</button>
               <button class="btn btn-outline-danger" onclick="if (confirm('Bạn có chắc chắn muốn xóa thiết bị này không?')) { location.href=' {% url 'delete_phone' phone.id %}'; }" type="button">Xóa</button>
             </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+      
   
 
       <nav aria-label="Page navigation example">

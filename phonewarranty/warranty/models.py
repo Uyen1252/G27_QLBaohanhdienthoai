@@ -30,7 +30,10 @@ class Phone(models.Model):
     
 class Warranty(models.Model):
     MKH = models.CharField(max_length=255, unique=True)
+    name_KH = models.CharField(max_length=255)
+    phone_number = models.IntegerField()
     name = models.CharField(max_length=255)
+    name_hang = models.CharField(max_length=255)
     start_date = models.DateField()
     end_date = models.DateField()
     NCC = models.CharField(max_length=255)

@@ -9,13 +9,42 @@ from datetime import date, datetime
 
 
 def phone_list(request): 
-    phones = Phone.objects.all()
+    sort_param = request.GET.get('sort', '')
+    if sort_param == 'name_asc':
+        phones = Phone.objects.order_by('name')
+    elif sort_param == 'name_desc':
+        phones = Phone.objects.order_by('-name')
+    elif sort_param == 'warranty':
+        phones = Phone.objects.filter(end_date__gte=date.today())
+    elif sort_param == 'no_warranty':
+        phones = Phone.objects.filter(end_date__lt=date.today())
+    else:
+        phones = Phone.objects.all()
     return render(request, 'warranty/phone_list.html', {'phones': phones})
 
-
+    
 def warranty_list(request):
-    warranties = Warranty.objects.all()
+    sort_param = request.GET.get('sort', '')
+    if sort_param == 'name_asc':
+        warranties = Warranty.objects.order_by('name')
+    elif sort_param == 'name_desc':
+        warranties = Warranty.objects.order_by('-name')
+    elif sort_param == 'NCC_asc':
+        warranties = Warranty.objects.order_by('NCC')
+    elif sort_param == 'NCC_desc':
+        warranties = Warranty.objects.order_by('-NCC')
+    elif sort_param == 'name_KH_asc':
+        warranties = Warranty.objects.order_by('name_KH')
+    elif sort_param == 'name_KH_desc':
+        warranties = Warranty.objects.order_by('-name_KH')
+    elif sort_param == 'name_hang_asc':
+        warranties = Warranty.objects.order_by('name_hang')
+    elif sort_param == 'name_hang_desc':
+        warranties = Warranty.objects.order_by('-name_hang')
+    else:
+        warranties = Warranty.objects.all()
     return render(request, 'warranty/warranty_list.html', {'warranties': warranties})
+
 
 
 def add_phone(request):

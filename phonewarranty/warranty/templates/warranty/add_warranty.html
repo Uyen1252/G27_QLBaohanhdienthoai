@@ -1,16 +1,67 @@
 {% extends 'warranty/base.html' %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}"> 
-
+<link rel="stylesheet" href="{% static 'select2/css/select2.min.css' %}">
+<script src="{% static 'select2/js/select2.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}">
+<link rel="stylesheet" href="{% static 'autocomplete_light/select2.css' %}">
+<script src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
+<script src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
 
 {% block content %}
-    <div class="box" style="margin-top: 20px; margin-bottom: 20px;">
-      <h4 style="text-align: center; margin-top: 10px; margin-bottom: 10px;">Thêm bảo hành</h4>
-      <form style="margin-left: 190px;" method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button class="btn btn-outline-danger" type="submit">Thêm</button>
-        <button class="btn btn-outline-danger" onclick="location.href='{% url 'warranty_list'%}'" type="button">Hủy</button>
-      </form>
+<section class="vh-100">
+  <div class="container h-100">
+    <div class="row justify-content-center align-items-center h-100">
+      <div class="col-12 col-lg-9 col-xl-7">
+        <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
+          <div class="card-body p-4 p-md-5" style="background-color: #eccbd1;">
+            <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Thêm Thiết Bị</h3>
+            <div class="box" style="margin-top: 20px; margin-bottom: 20px;">
+              <h4 style="text-align: center; margin-top: 10px; margin-bottom: 10px;">Thêm Thiết Bị</h4>
+              <form style="margin-left: 190px;" method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <script>
+                  $(document).ready(function() {
+                    $("#id_phone").select2({
+                      ajax: {
+                        url: "{% url 'phone-autocomplete' %}",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                          return {
+                            q: params.term,
+                            page: params.page
+                          };
+                        },
+                        processResults: function(data, params) {
+                          params.page = params.page || 1;
+                          return {
+                            results: data.results,
+                            pagination: {
+                              more: data.next != null
+                            }
+                          };
+                        },
+                        cache: true
+                      },
+                      minimumInputLength: 2,
+                      templateResult: function(data) {
+                        return data.text;
+                      },
+                      templateSelection: function(data) {
+                        return data.text;
+                      }
+                    });
+                  });
+                </script>
+                <button class="btn btn-outline-danger" type="submit">Thêm</button>
+                <button class="btn btn-outline-danger" onclick="location.href='{% url 'phone_list'%}'" type="button">Hủy</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+</section>
 {% endblock %}

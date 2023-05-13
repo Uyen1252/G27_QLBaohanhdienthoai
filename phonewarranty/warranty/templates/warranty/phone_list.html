@@ -21,14 +21,42 @@
                         <span class="visually-hidden">Toggle Dropdown</span>
                       </button>
                       <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_desc">Sắp xếp (A-Z)</a></li>
-                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_asc">Sắp xếp (Z-A)</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_asc">Sắp xếp (A-Z)</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_desc">Sắp xếp (Z-A)</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </th>
+                <th> 
+                  <div class="btn-group" style="height: 30px; ">
+                    <div style="text-align: center;">
+                      Tên hãng
+                      <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_brand_asc">Sắp xếp (A-Z)</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_brand_desc">Sắp xếp (Z-A)</a></li>
                       </ul>
                     </div>
                   </div>
                 </th>
                 <th>Ngày bắt đầu bảo hành</th>
                 <th>Ngày kết thúc bảo hành</th>
+                <th> 
+                  <div class="btn-group" style="height: 30px; ">
+                    <div style="text-align: center;">
+                      Nhà cung cấp
+                      <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=NCCand_asc">Sắp xếp (A-Z)</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=NCC_desc">Sắp xếp (Z-A)</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </th>
                 <th>
                   <div class="btn-group" style="height: 30px; ">
                     <div style="text-align: center;">
@@ -52,12 +80,14 @@
           <tr>
             <td>{{ phone.serial }}</td>
             <td>{{ phone.name }}</td>
+            <td>{{phone.name_brand}}</td>
             <td>{{ phone.start_date }}</td>
             <td>{{ phone.end_date }}</td>
+            <td>{{ phone.NCC }}</td>
             <td>{{ phone.warranty_status }}</td>
             <td>
-              <button class="btn btn-outline-danger" onclick="location.href='{% url 'update_phone' phone.id %}'" type="button">Chi tiết</button>
-              <button class="btn btn-outline-danger" onclick="if (confirm('Bạn có chắc chắn muốn xóa thiết bị này không?')) { location.href=' {% url 'delete_phone' phone.id %}'; }" type="button">Xóa</button>
+              <button class="btn btn-outline-danger" onclick="location.href='{% url 'update_phone' phone_id=phone.id %}'" type="button">Chi tiết</button>
+              <button class="btn btn-outline-danger" onclick="if (confirm('Bạn có chắc chắn muốn xóa thiết bị này không?')) { location.href=' {% url 'delete_phone' phone_id=phone.id %}'; }" type="button">Xóa</button>
             </td>
           </tr>
           {% endfor %}

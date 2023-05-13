@@ -1,53 +1,19 @@
-.box {
-    width: 50%;
-    height: 100%;
-    background-color: #f7c0cc;
-    padding: 20px;
-    border-radius: 4px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-    margin: auto;
+.gradient-custom {
+    /* fallback for old browsers */
+    background: #f093fb;
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(to bottom right, rgba(240, 147, 251, 1), rgba(245, 87, 108, 1));
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(to bottom right, rgba(240, 147, 251, 1), rgba(245, 87, 108, 1))
 }
 
-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+.card-registration .select-input.form-control[readonly]:not([disabled]) {
+    font-size: 1rem;
+    line-height: 2.15;
+    padding-left: .75em;
+    padding-right: .75em;
 }
 
-form input {
-    display: block;
-    margin-bottom: auto;
-    border: 1px solid #db0c40;
-    border-radius: 4px;
-    width: 70%;
-    height: 35px;
-}
-
-form button {
-    display: block;
-    width: 100px;
-    height: 40px;
-    background-color: #db0c40;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-form textarea {
-    display: block;
-    margin-bottom: auto;
-    border: 1px solid #db0c40;
-    border-radius: 4px;
-    width: 70%;
-    height: 100px;
-}
-
-form select {
-    display: block;
-    margin-bottom: auto;
-    border: 1px solid #db0c40;
-    border-radius: 4px;
-    width: 70%;
-    height: 35px;
+.card-registration .select-arrow {
+    top: 13px;
 }

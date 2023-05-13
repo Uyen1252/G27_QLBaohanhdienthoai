@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 
+
 # Create your models here.
 from django.db import models
 from django.utils import timezone
@@ -8,15 +9,17 @@ from django.dispatch import receiver
 from datetime import date
        
 class Phone(models.Model):
-    serial = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=255)
+    serial = models.IntegerField()
+    name = models.CharField(max_length=50)
+    name_brand = models.CharField(max_length=50)
     start_date = models.DateField()
     end_date = models.DateField()
-    NCC = models.CharField(max_length=255)
-    description = models.TextField(null=True, max_length=255)
+    NCC = models.CharField(max_length=50)
+    description = models.TextField(null=True, max_length=100)
     
     def __str__(self):
-        return self.serial
+        return f"{self.serial}"
+    
     
     def is_under_warranty(self):
         return self.end_date >= date.today()
@@ -29,15 +32,17 @@ class Phone(models.Model):
 
     
 class Warranty(models.Model):
-    MKH = models.CharField(max_length=255, unique=True)
-    name_KH = models.CharField(max_length=255)
-    phone_number = models.IntegerField()
-    name = models.CharField(max_length=255)
-    name_hang = models.CharField(max_length=255)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    NCC = models.CharField(max_length=255)
-    description = models.TextField(null=True)
-    
+    id = models.IntegerField(primary_key=True)
+    phone = models.ForeignKey(Phone, on_delete=models.CASCADE)
+    MGD = models.CharField(max_length=10, unique=True)
+    name_KH = models.CharField(max_length=50)
+    phone_number = models.CharField(max_length=30)
+    ngaynhan = models.DateField()
+    ngaytra = models.DateField()
+    note = models.TextField(null=True)
+
     def __str__(self):
-        return self.MKH
+        return self.MGD
+    
+
+    

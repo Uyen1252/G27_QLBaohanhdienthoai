@@ -1,57 +1,50 @@
 from django import forms
 from .models import Phone, Warranty
+from dal import autocomplete
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
 class PhoneForm(forms.ModelForm):
     class Meta:
         model = Phone
-        fields = ('serial', 'name', 'start_date', 'end_date', 'NCC', 'description')
+        fields = ('serial', 'name', 'name_brand', 'start_date', 'end_date', 'NCC', 'description')
+        
         widgets = {
             'start_date': forms.DateInput(attrs={'type': 'date'}),
-            'end_date': forms.DateInput(attrs={'type': 'date'}),
-    }
-        
-        labels = {
-            'serial': 'Serial',
-            'name': 'Tên thiết bị',
-            'start_date': 'Ngày bắt đầu bảo hành',
-            'end_date': 'Ngày kết thúc bảo hành',
-            'NCC': 'Nhà cung cấp',
-            'description': 'Mô tả'
+            'end_date': forms.DateInput(attrs={'type': 'date'})
         }
-    
-    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}), required=False, label="Mô tả")
-
-    
 
 class WarrantyForm(forms.ModelForm):
+    phone = forms.ModelChoiceField(
+        queryset=Phone.objects.all(),
+        widget=autocomplete.ModelSelect2(
+            url='phone-autocomplete',
+            attrs={
+                'data-placeholder': 'Type to autocomplete...',
+                'data-minimum-input-length': 2,
+                'id': 'id_phone' # Thêm id cho trường phone
+            },
+        )
+    )
+
+    name = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    NCC = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    name_brand = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+
     class Meta:
         model = Warranty
-        fields = ('MKH', 'name_KH', 'phone_number', 'name_hang', 'name', 'start_date', 'end_date', 'NCC', 'description',)
+        fields = ('phone', 'MGD', 'name_KH', 'phone_number', 'ngaynhan', 'ngaytra', 'note')
+
         widgets = {
-            'start_date': forms.DateInput(attrs={'type': 'date'}),
-            'end_date': forms.DateInput(attrs={'type': 'date'}),
-    }
-        
-        labels = {
-            'phone_number': 'Số điện thoại',
-            'MKH': 'Mã khách hàng',
-            'name_KH': 'Tên khách hàng',
-            'name': 'Tên thiết bị',
-            'name_hang': 'Tên hãng',
-            'start_date': 'Ngày nhận bảo hành',
-            'end_date': 'Ngày trả bảo hành',
-            'NCC': 'Nhà cung cấp',
-            'description': 'Mô tả',
-            
+            'ngaynhan': forms.DateInput(attrs={'type': 'date'}),
+            'ngaytra': forms.DateInput(attrs={'type': 'date'})
         }
-    
-    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}), required=False, label="Mô tả")
-        
 
-        
-        
-
-
-
-
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.id:
+            self.fields['name'].initial = self.instance.phone.name
+            self.fields['NCC'].initial = self.instance.phone.NCC
+            self.fields['name_brand'].initial = self.instance.phone.name_brand
+            self.fields['phone'].disabled = True
+            

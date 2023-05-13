@@ -6,13 +6,22 @@
     <link rel="stylesheet" href="{% static 'warranty/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'warranty/css/all.min.css' %}">
     <link rel="stylesheet" href="{% static 'warranty/css/owl.min.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.0.2/dist/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
     <script src="{% static 'warranty/js/all.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{% static 'warranty/js/s3.js' %}"></script>
     <script src="{% static 'warranty/js/myscript.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}">
+    <script src="{% static 'warranty/js/owl.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.10/jquery.autocomplete.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}"> 
+    
 
     <title>Phone Warranty</title>
     
@@ -21,7 +30,7 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: pink">
       <div class ="container-fluid">
-        <a class = "navbar-brand", href="#" style="margin-left: 10px; margin-right: 800px;">
+        <a class = "navbar-brand", href="#" style="margin-left: 10px; margin-right: 700px;">
           <img src="{% static 'warranty/images/logo1.png' %}" width="200", height="100" alt="logo">
         </a>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -39,7 +48,6 @@
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="{% url 'add_phone'%}">Thêm Thiết Bị </a></li>
                   <li><a class="dropdown-item" href="{% url 'phone_list'%}">Danh Sách Thiết bị</a></li>
-                  <li><a class="dropdown-item" href="{% url 'expired_warranty'%}">Thiết Bị Hết Hạn Bảo Hành</a></li>
                   
                 </ul>
             </div>
@@ -52,22 +60,28 @@
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'add_warranty'%}">Thêm Bảo hành </a></li>
                 <li><a class="dropdown-item" href="{% url 'warranty_list'%}">Danh Sách Bảo Hành</a></li>
-                <li><a class="dropdown-item" href="{% url 'high_warranty'%}">Thiết bị Thường Bảo Hành </a></li>
+              </ul>
+            </div>
+
+            <div class="btn-group" style="margin-right: 10px;">
+              <button type="button" class="btn btn-outline-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Thống Kê
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'TK'%}">Thống Kê Theo Hãng </a></li>
               </ul>
             </div>
 
 
             <ul class="navbar-nav" style="margin-right: 10px;">
               <li class = "nav-item">
-                <button class="btn btn-outline-danger">Đăng Xuất</button>
+                <button class="btn btn-outline-danger" onclick="location.href='{% url 'logout_view'%}'">Đăng Xuất</button>
               </li>
             </ul>
 
 
           </div>
         </div>
-    
-
     </nav> 
     <main>
       {% block content %}

@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect, Http404
+from django.shortcuts import render, get_object_or_404, redirect, Http404, HttpResponse
 from .models import Warranty, Phone
 from django.shortcuts import render, redirect
 from .forms import PhoneForm, WarrantyForm
@@ -13,10 +13,10 @@ from django.views.decorators.http import require_GET
 from dal import autocomplete
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.generic.list import MultipleObjectMixin
 
 
 def phone_list(request): 
@@ -155,13 +155,9 @@ def TK(request):
     return render(request, 'warranty/TK.html', {'brands': brands, 'names': names})
 
 
-# Additional imports we'll need:
-from django.contrib.auth import authenticate, login, logout
-
-
 def get_data(queryset):
     data = {
-        'labels': [obj['name'] for obj in queryset],
+        'labels': [obj['phone__name'] for obj in queryset],
         'data': [obj['name_count'] for obj in queryset]
     }
     return data
@@ -173,60 +169,69 @@ def ajax_get_all_names(request):
 
 def ajax_get_names_by_brand(request):
     brand = request.GET.get('brand')
-    queryset = Warranty.objects.filter(name_brand=brand).values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
+    queryset = Warranty.objects.filter(phone__name_brand=brand).values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
     return JsonResponse(get_data(queryset))
 
-from dal import autocomplete
 
 class PhoneAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = Phone.objects.all()
         if self.q:
-            qs = qs.filter(Q(name__icontains=self.q) | Q(serial__icontains=self.q))
+            qs = qs.filter(Q(serial__icontains=self.q))
         return qs
 
     def get_result_label(self, item):
-        return item.name
+        return item.serial
 
     def get_selected_result_label(self, item):
-        return item.name
+        return item.serial
+    
+    def get_paginated_response(self, results, has_more):
+        return JsonResponse({
+        'results': results,
+        'pagination': {
+            'more': has_more,
+        }
+    })
 
     def get(self, request, *args, **kwargs):
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             qs = self.get_queryset()
-            page = self.paginate_queryset(qs)
+            paginator = self.paginator_class(list(qs), self.paginate_by)
+            page = paginator.get_page(self.request.GET.get('page'))
             results = []
             if page is not None:
-                for obj in page:
+                for obj in page.object_list:
                     results.append({'id': obj.pk, 'text': self.get_result_label(obj)})
-                return self.get_paginated_response(results)
+                has_more = page.has_next()
             else:
                 for obj in qs:
                     results.append({'id': obj.pk, 'text': self.get_result_label(obj)})
-                return JsonResponse({'results': results})
+                has_more = False
+            return self.get_paginated_response(results, has_more)
+
         return super().get(request, *args, **kwargs)
+
+
     
     
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .forms import UserCreationForm
+from .forms import RegisterForm
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=password)
-            login(request, user)
-            messages.success(request, f'Account created for {username}!')
+            messages.success(request, f'Account created!')
+            print('Đăng ký thành công !')
             return redirect('login_view')
         else:
             messages.error(request, 'Invalid form submission.')
     else:
-        form = UserCreationForm()
+        form = RegisterForm()
     return render(request, 'users/register.html', {'form': form})
 
 def login_view(request):
@@ -247,3 +252,5 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'Logout successful!')
     return redirect('login_view')
+
+

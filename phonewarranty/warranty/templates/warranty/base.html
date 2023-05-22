@@ -20,7 +20,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.10/jquery.autocomplete.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}"> 
+    {% comment %} <link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}">  {% endcomment %}
     
 
     <title>Phone Warranty</title>
@@ -68,7 +68,8 @@
                 Thống Kê
               </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'TK'%}">Thống Kê Theo Hãng </a></li>
+                <li><a class="dropdown-item" href="{% url 'TK'%}">Thống Kê Thiết Bị </a></li>
+                <li><a class="dropdown-item" href="{% url 'TK_baohanh'%}">Thống Kê Bảo Hành  </a></li>
               </ul>
             </div>
 

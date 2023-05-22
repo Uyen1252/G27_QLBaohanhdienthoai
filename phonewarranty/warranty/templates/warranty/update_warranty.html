@@ -1,13 +1,131 @@
 {% extends 'warranty/base.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'select2/css/select2.min.css' %}">
+<script src="{% static 'select2/js/select2.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'warranty/css/add_phone.css' %}">
+<link rel="stylesheet" href="{% static 'autocomplete_light/select2.css' %}">
+<script src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
+<script src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
 
 {% block content %}
-<h4 style="margin-left: 40px; margin-top: 20px">Cập nhật bảo hành</h4>
-<div class="table-responsive" style="margin: auto; margin-top: 20px; margin-bottom: 50px; width: 95%;">
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-outline-danger">Cập nhật</button>
-    <button class="btn btn-outline-danger" onclick="location.href='{% url 'warranty_list'%}'" type="button">Hủy</button>
-  </form>
-</div>
+<section class="vh-100 gradient-custom">
+  <div class="container py-5 h-100">
+    <div class="row justify-content-center align-items-center h-100">
+      <div class="col-12 col-lg-9 col-xl-7">
+        <div class="card shadow-2-strong card-registration" style="border-radius: 15px; background-color: pink;">
+          <div class="card-body p-4 p-md-5">
+            <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Chi tiết bảo hành</h3>
+            <form method="POST">
+              {% csrf_token %}
+
+              <div class="row">
+                <div class="col-md-3 mb-4">
+
+                  <div class="form-outline">
+                    <label class="form-label" for="giao dịch">Mã giao dịch:</label>
+                    <input type="text" name="MGD" id="giao dịch" class="form-control form-control-lg" value="{{ form.MGD.value }}">
+                  </div>
+
+                </div>
+                <div class="col-md-9 mb-4 d-flex align-items-center">
+
+                  <div class="form-outline datepicker w-100">
+                    <label for="name" class="form-label">Tên khách hàng:</label>
+                    <input name="name_KH" type="text" class="form-control form-control-lg" id="name_KH" value="{{ form.name_KH.value }}">
+                  </div>
+
+                </div>
+                
+              </div>
+
+              <div class="row">
+                <div class="col-md-12 mb-4 d-flex align-items-center">
+
+                  <div class="form-outline datepicker w-100">
+                    <label for="phone" class="form-label">Số điện thoại:</label>
+                    <input name="phone_number" type="text" class="form-control form-control-lg" id="phone" value="{{ form.phone_number.value }}">
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-3 mb-4 d-flex align-items-center">
+
+                  <div class="form-outline datepicker w-100">
+                    <label for="phone" class="form-label">Serial:</label>
+                    <input name="phone" type="text" class="form-control form-control-lg" id="phone" value="{{ form.instance.phone }}">
+                  </div>
+
+                </div>
+                <div class="col-md-9 mb-4 d-flex align-items-center">
+
+                  <div class="form-outline datepicker w-100">
+                    <label for="name" class="form-label">Tên thiết bị:</label>
+                    <input name="name" type="text" class="form-control form-control-lg" id="name_KH" value="{{ form.instance.phone.name }}">
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-7 mb-4 d-flex align-items-center">
+
+                  <div class="form-outline datepicker w-100">
+                    <label for="name" class="form-label">Tên Hãng:</label>
+                    <input name="name_brand" type="text" class="form-control form-control-lg" id="name_KH" value="{{ form.instance.phone.name_brand }}">
+                  </div>
+
+                </div>
+                <div class="col-md-5 mb-4 d-flex align-items-center">
+
+                  <div class="form-outline datepicker w-100">
+                    <label for="phone" class="form-label">Nhà cung cấp:</label>
+                    <input name="NCC" type="text" class="form-control form-control-lg" id="phone" value="{{ form.instance.phone.NCC }}">
+                  </div>
+
+                </div>
+              </div>
+
+
+              <div class="row">
+                <div class="col-md-6 mb-4 pb-2">
+
+                  <div class="form-outline">
+                    <label class="form-label" for="start">Ngày nhận bảo hành:</label>
+                    <input name="ngaynhan" type="date" id="start" class="form-control form-control-lg" value="{{ form.instance.ngaynhan|date:'Y-m-d' }}" />
+                  </div>
+
+                </div>
+                <div class="col-md-6 mb-4 pb-2">
+
+                  <div class="form-outline">
+                    <label class="form-label" for="end">Ngày trả bảo hành:</label>
+                    <input name="ngaytra" type="date" id="end" class="form-control form-control-lg" value="{{ form.instance.ngaytra|date:'Y-m-d' }}" />
+                  </div>
+
+                </div>
+              </div>
+
+                <div class="form-outline">
+                    <label class="form-label" for="note">Mô tả:</label>
+                    <input style="width: 100%; height: 100px;" name="description" type="text" id="note" class="form-control form-control-lg" />
+                </div>
+
+
+              <div class="mt-4 pt-10">
+                <button style="width: 100px; height: 40px;" class="btn btn-outline-danger" type="submit">Cập nhật</button>
+                <button style="width: 80px;" class="btn btn-outline-danger" onclick="location.href='{% url 'warranty_list'%}'" type="button">Hủy</button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}
+
+
+

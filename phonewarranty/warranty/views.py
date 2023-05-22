@@ -1,79 +1,102 @@
-from django.shortcuts import render, get_object_or_404, redirect, Http404, HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect, Http404
 from .models import Warranty, Phone
-from django.shortcuts import render, redirect
-from .forms import PhoneForm, WarrantyForm
+from .forms import PhoneForm, WarrantyForm, RegisterForm
 from django.contrib import messages
 from django.urls import reverse
-from django.db.models import Q, Count, F
-from datetime import date, datetime
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponseRedirect, JsonResponse
+from django.db.models import Q, Count, F, Case, When, BooleanField, Sum, IntegerField
+from datetime import date
+from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from dal import autocomplete
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.views.generic.list import MultipleObjectMixin
+from django.core.paginator import Paginator
+from django.contrib.auth import authenticate, login, logout
 
-
-def phone_list(request): 
+def phone_list(request):
+    phones = Phone.objects.all()
     sort_param = request.GET.get('sort', '')
-    if sort_param == 'name_asc':
-        phones = Phone.objects.order_by('name')
-    elif sort_param == 'name_desc':
-        phones = Phone.objects.order_by('-name')
-    elif sort_param == 'name_brand_asc':
-        phones = Phone.objects.order_by('name_brand')
-    elif sort_param == 'name_brand_desc':
-        phones = Phone.objects.order_by('-name_brand')
-    elif sort_param == 'NCC_asc':
-        phones = Phone.objects.order_by('NCC')
-    elif sort_param == 'NCC_desc':
-        phones = Phone.objects.order_by('-NCC')
-    elif sort_param == 'warranty':
-        phones = Phone.objects.filter(end_date__gte=date.today())
-    elif sort_param == 'no_warranty':
-        phones = Phone.objects.filter(end_date__lt=date.today())
-    else:
-        phones = Phone.objects.all()
-    return render(request, 'warranty/phone_list.html', {'phones': phones})
+    brands = request.GET.getlist('brands')
+    nccs = request.GET.getlist('nccs')
 
-    
+    if brands:
+        phones = phones.filter(name_brand__in=brands)
+
+    if nccs:
+        phones = phones.filter(NCC__in=nccs)
+
+    sorting_options = {
+        'name_asc': 'name',
+        'name_desc': '-name',
+        'start_date_asc': 'start_date',
+        'start_date_desc': '-start_date',
+        'end_date_asc': 'end_date',
+        'end_date_desc': '-end_date',
+    }
+
+    if sort_param in sorting_options:
+        phones = phones.order_by(sorting_options[sort_param])
+
+    if sort_param == 'warranty':
+        phones = phones.filter(end_date__gte=date.today())
+    elif sort_param == 'no_warranty':
+        phones = phones.filter(end_date__lt=date.today())
+
+    paginator = Paginator(phones, 200)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    unique_brands = Phone.objects.values_list('name_brand', flat=True).distinct()
+    unique_nccs = Phone.objects.values_list('NCC', flat=True).distinct()
+
+    context = {
+        'phones': page_obj,
+        'sort_param': sort_param,
+        'brands': unique_brands,
+        'nccs': unique_nccs,
+    }
+
+    return render(request, 'warranty/phone_list.html', context)
+
+
 def warranty_list(request):
     warranties = Warranty.objects.select_related('phone').annotate(name_brand=F('phone__name_brand'))
     sort_param = request.GET.get('sort', '')
     brands = request.GET.getlist('brands')
     nccs = request.GET.getlist('nccs')
+    
     if len(brands) > 0:
-        warranties = Warranty.objects.filter(name_brand__in=brands)
+        warranties = warranties.filter(name_brand__in=brands)
 
     if len(nccs) > 0:
-        warranties = warranties.filter(NCC__in=nccs)
-        
-    else:
-        warranties = Warranty.objects.all()
+        warranties = warranties.filter(phone__NCC__in=nccs)
 
-    if sort_param == 'name_asc':
-        warranties = warranties.order_by('name')
-    elif sort_param == 'name_desc':
-        warranties = warranties.order_by('-name')
-    elif sort_param == 'name_KH_asc':
-        warranties = warranties.order_by('name_KH')
-    elif sort_param == 'name_KH_desc':
-        warranties = warranties.order_by('-name_KH')
-    elif sort_param == 'ncc_asc':
-        warranties = warranties.order_by('phone__NCC')
-    elif sort_param == 'ncc_desc':
-        warranties = warranties.order_by('-phone__NCC')
-        
-    return render(request, 'warranty/warranty_list.html', {'warranties': warranties})
+    sort_options = {
+        'name_asc': 'phone__name',
+        'name_desc': '-phone__name',
+        'name_KH_asc': 'name_KH',
+        'name_KH_desc': '-name_KH',
+        'ngaynhan_asc': 'ngaynhan',
+        'ngaynhan_desc': '-ngaynhan',
+        'ngaytra_asc': 'ngaytra',
+        'ngaytra_desc': '-ngaytra',
+    }
 
+    if sort_param in sort_options:
+        sort_field = sort_options[sort_param]
+        warranties = warranties.order_by(sort_field)
+
+    paginator = Paginator(warranties, 200)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    unique_brands = Phone.objects.values_list('name_brand', flat=True).distinct()
+    unique_nccs = Phone.objects.values_list('NCC', flat=True).distinct()
+
+    return render(request, 'warranty/warranty_list.html', {'warranties': page_obj, 'sort_param': sort_param, 'brands': unique_brands, 'nccs': unique_nccs})
 
 
 def add_phone(request):
+    nccs = Phone.objects.values('NCC').distinct()
+    
     if request.method == 'POST':
         form = PhoneForm(request.POST)
         if form.is_valid():
@@ -81,14 +104,17 @@ def add_phone(request):
             return redirect('phone_list')
     else:
         form = PhoneForm()
-    return render(request, 'warranty/add_phone.html', {'form': form})
+
+    context = {'form': form, 'nccs': nccs}
+    return render(request, 'warranty/add_phone.html', context)
 
 
 def update_phone(request, phone_id):
+    nccs = Phone.objects.values('NCC').distinct()
+    
     try:
         phone_id = int(phone_id)
     except ValueError:
-        # If phone_id is not a valid integer, return a 404 error
         raise Http404('Invalid phone ID')
         
     phone = get_object_or_404(Phone, id=phone_id)
@@ -100,7 +126,10 @@ def update_phone(request, phone_id):
             return redirect('phone_list')
     else:
         form = PhoneForm(instance=phone)
-    return render(request, 'warranty/update_phone.html', {'form': form})
+    
+    context = {'form': form, 'nccs': nccs, 'phone_id': phone_id}
+    return render(request, 'warranty/update_phone.html', context)
+
 
 
 
@@ -112,12 +141,13 @@ def delete_phone(request, phone_id):
 
 def search_phone(request):
     query = request.GET.get('q')
-    phones = Phone.objects.filter(Q(serial__icontains=query) | Q(name__icontains=query))
+    phones = Phone.objects.filter(Q(serial__icontains=query))
     return render(request, 'warranty/kq_search_phone.html', {'phones': phones})
 
 def search_warranty(request):
     query = request.GET.get('q')
     warranties = Warranty.objects.filter(Q(name_KH__icontains=query) | Q(phone_number__icontains=query))
+    
     return render(request, 'warranty/kq_search_warranty.html', {'warranties': warranties})
 
 def add_warranty(request):
@@ -150,27 +180,233 @@ def delete_warranty(request, warranty_id):
 
 
 def TK(request):
-    brands = Warranty.objects.values('phone__name_brand').annotate(name_brand_count=Count('phone__name_brand')).order_by('-name_brand_count')
-    names = Warranty.objects.values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
-    return render(request, 'warranty/TK.html', {'brands': brands, 'names': names})
+    names = Phone.objects.values('name').annotate(name_count=Count('name')).order_by('-name_count')
+
+    nccs = Phone.objects.values('NCC', 'name_brand').annotate(
+        name_count=Count('name'),
+        under_warranty=Sum(
+            Case(
+                When(end_date__gte=date.today(), then=1),
+                default=0,
+                output_field=IntegerField()
+            )
+        ),
+        expired_warranty=Sum(
+            Case(
+                When(end_date__lt=date.today(), then=1),
+                default=0,
+                output_field=IntegerField()
+            )
+        )
+    ).order_by('-name_count')
+
+    nccs = Phone.objects.values('NCC').annotate(name_count=Count('name')).order_by('-name_count')
+    brands = Phone.objects.values('name_brand').distinct()
+
+    return render(request, 'warranty/TK.html', {'nccs': nccs, 'names': names, 'brands': brands})
 
 
 def get_data(queryset):
+    data = {
+        'labels': [obj['name'] for obj in queryset],
+        'data': [obj['name_count'] for obj in queryset]
+    }
+    return data
+
+def ajax_get_all_names(request):
+    names = Phone.objects.values('name').annotate(name_count=Count('name')).order_by('-name_count')
+
+    labels = [name['name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+
+def ajax_get_names_by_brand(request):
+    brand = request.GET.get('brand')
+    if brand == 'all':
+        names = Phone.objects.values('name').annotate(name_count=Count('name')).order_by('-name_count')
+    else:
+        names = Phone.objects.filter(name_brand=brand).values('name').annotate(name_count=Count('name')).order_by('-name_count')
+
+    labels = [name['name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+def ajax_get_names_by_ncc(request):
+    ncc = request.GET.get('ncc')
+    if ncc == 'all':
+        names = Phone.objects.values('name').annotate(name_count=Count('name')).order_by('-name_count')
+    else:
+        names = Phone.objects.filter(NCC=ncc).values('name').annotate(name_count=Count('name')).order_by('-name_count')
+
+    labels = [name['name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+def ajax_get_names_by_brand_and_ncc(request):
+    brand = request.GET.get('brand')
+    ncc = request.GET.get('ncc')
+    if brand == 'all' and ncc == 'all':
+        names = Phone.objects.values('name').annotate(name_count=Count('name')).order_by('-name_count')
+    elif brand == 'all':
+        names = Phone.objects.filter(NCC=ncc).values('name').annotate(name_count=Count('name')).order_by('-name_count')
+    elif ncc == 'all':
+        names = Phone.objects.filter(name_brand=brand).values('name').annotate(name_count=Count('name')).order_by('-name_count')
+    else:
+        names = Phone.objects.filter(name_brand=brand, NCC=ncc).values('name').annotate(name_count=Count('name')).order_by('-name_count')
+
+    labels = [name['name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+def ajax_get_names_by_warranty_status(request):
+    status = request.GET.get('status')
+
+    names = Phone.objects.filter(status=status).values('name').annotate(name_count=Count('name')).order_by('-name_count')
+
+    labels = [name['name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+
+def ajax_get_names_by_brand_and_warranty_status(request):
+    brand = request.GET.get('brand')
+    status = request.GET.get('status')
+    
+    phones = Phone.objects.all()
+    
+    if brand != 'all':
+        phones = phones.filter(name_brand=brand)
+        
+    if status == 'under_warranty':
+        phones = phones.filter(end_date__gte=date.today())
+    elif status == 'expired_warranty':
+        phones = phones.filter(end_date__lt=date.today())
+    
+    names = phones.values('name').annotate(name_count=Count('name')).order_by('-name_count')
+    
+    labels = [name['name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+
+
+def ajax_get_names_by_ncc_and_warranty_status(request):
+    ncc = request.GET.get('ncc')
+    status = request.GET.get('status')
+    
+    phones = Phone.objects.all()
+    
+    if ncc != 'all':
+        phones = phones.filter(NCC=ncc)
+        
+    if status == 'under_warranty':
+        phones = phones.filter(end_date__gte=date.today())
+    elif status == 'expired_warranty':
+        phones = phones.filter(end_date__lt=date.today())
+    
+    names = phones.values('name').annotate(name_count=Count('name')).order_by('-name_count')
+    
+    labels = [name['name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+
+
+
+def ajax_get_names_by_brand_ncc_and_warranty_status(request):
+    brand = request.GET.get('brand')
+    ncc = request.GET.get('ncc')
+    status = request.GET.get('status')
+    
+    phones = Phone.objects.filter(name_brand=brand, NCC=ncc)
+    
+    if status == 'under_warranty':
+        phones = phones.filter(end_date__gte=date.today())
+    elif status == 'expired_warranty':
+        phones = phones.filter(end_date__lt=date.today())
+    
+    names = phones.values('name').annotate(name_count=Count('name')).order_by('-name_count')
+    
+    labels = [name['name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+
+def TK_baohanh(request):
+    nccs = Warranty.objects.values('phone__NCC').annotate(name_count=Count('phone__name')).order_by('-name_count')
+    names = Warranty.objects.values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
+    brands = Warranty.objects.values('phone__name_brand').distinct()
+    
+    return render(request, 'warranty/TK_baohanh.html', {'nccs': nccs, 'names': names, 'brands': brands})
+
+
+def get_data_baohanh(queryset):
     data = {
         'labels': [obj['phone__name'] for obj in queryset],
         'data': [obj['name_count'] for obj in queryset]
     }
     return data
 
-@require_GET
-def ajax_get_all_names(request):
-    queryset = Warranty.objects.values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
-    return JsonResponse(get_data(queryset))
+def ajax_get_all_names_baohanh(request):
+    names = Warranty.objects.values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
 
-def ajax_get_names_by_brand(request):
+    labels = [name['phone__name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+
+def ajax_get_names_by_brand_baohanh(request):
     brand = request.GET.get('brand')
-    queryset = Warranty.objects.filter(phone__name_brand=brand).values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
-    return JsonResponse(get_data(queryset))
+    if brand == 'all':
+        names = Warranty.objects.values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
+    else:
+        names = Warranty.objects.filter(phone__name_brand=brand).values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
+
+    labels = [name['phone__name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+def ajax_get_names_by_ncc_baohanh(request):
+    ncc = request.GET.get('ncc')
+    if ncc == 'all':
+        names = Warranty.objects.values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
+    else:
+        names = Warranty.objects.filter(phone__NCC=ncc).values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
+
+    labels = [name['phone__name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+def ajax_get_names_by_brand_and_ncc_baohanh(request):
+    brand = request.GET.get('brand')
+    ncc = request.GET.get('ncc')
+    if brand == 'all' and ncc == 'all':
+        names = Warranty.objects.values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
+    elif brand == 'all':
+        names = Warranty.objects.filter(phone__NCC=ncc).values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
+    elif ncc == 'all':
+        names = Warranty.objects.filter(phone__name_brand=brand).values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
+    else:
+        names = Warranty.objects.filter(phone__name_brand=brand, phone__NCC=ncc).values('phone__name').annotate(name_count=Count('phone__name')).order_by('-name_count')
+
+    labels = [name['phone__name'] for name in names]
+    data = [name['name_count'] for name in names]
+    response = {'labels': labels, 'data': data}
+    return JsonResponse(response)
+
+
 
 
 class PhoneAutocomplete(autocomplete.Select2QuerySetView):
@@ -213,13 +449,6 @@ class PhoneAutocomplete(autocomplete.Select2QuerySetView):
         return super().get(request, *args, **kwargs)
 
 
-    
-    
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from .forms import RegisterForm
-
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -227,7 +456,7 @@ def register(request):
             form.save()
             messages.success(request, f'Account created!')
             print('Đăng ký thành công !')
-            return redirect('login_view')
+            return redirect('phone_list')
         else:
             messages.error(request, 'Invalid form submission.')
     else:

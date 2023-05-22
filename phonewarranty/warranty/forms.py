@@ -17,23 +17,22 @@ class RegisterForm(UserCreationForm):
 
 
 class PhoneForm(forms.ModelForm):
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={
+        'rows': 4}),
+        required=False,
+        empty_value='',
+        label="Mô tả"
+    )
+    
     class Meta:
         model = Phone
-        fields = ('serial', 'name', 'name_brand', 'start_date', 'end_date', 'NCC', 'description')
-        labels = {
-            'name': '',
-            'name_brand': '',
-            'NCC': '',
-        }
-        
+        fields = '__all__'
         widgets = {
-            'name' : forms.TextInput(attrs={'class':'form-control','placeholder':'Ten Thiet Bi'}),
-            'name_brand' : forms.TextInput(attrs={'class':'form-control','placeholder':'Name brand'}),
             'start_date': forms.DateInput(attrs={'type': 'date'}),
-            'end_date': forms.DateInput(attrs={'type': 'date'}),
-            'NCC' : forms.TextInput(attrs={'class':'form-control','placeholder':'NCC'})
-            
+            'end_date': forms.DateInput(attrs={'type': 'date'})
         }
+
 
 class WarrantyForm(forms.ModelForm):
     phone = forms.ModelChoiceField(
@@ -51,6 +50,13 @@ class WarrantyForm(forms.ModelForm):
     name = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}), required=False)
     NCC = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}), required=False)
     name_brand = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}), required=False)
+    note = forms.CharField(
+        widget=forms.Textarea(attrs={
+        'rows': 4}),
+        required=False,
+        empty_value='',
+        label="Ghi chú"
+    )
 
     class Meta:
         model = Warranty

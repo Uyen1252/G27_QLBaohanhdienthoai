@@ -129,7 +129,7 @@
 }
 
 [data-bs-theme=dark] {
-    --bs-body-color: #adb5bd;
+    --bs-body-color: #efafcb;
     --bs-body-color-rgb: 173, 181, 189;
     --bs-body-bg: #212529;
     --bs-body-bg-rgb: 33, 37, 41;
@@ -185,7 +185,7 @@
 }
 
 @media (prefers-reduced-motion:no-preference) {
-    :root {
+     :root {
         scroll-behavior: smooth
     }
 }

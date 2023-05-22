@@ -4,7 +4,7 @@
     <h4 style="margin-left: 40px; margin-top: 20px">Danh sách thiết bị</h4>
     <div style="margin-left: 40px; margin-top: 20px">
       <form class="d-flex" action="{% url 'search_phone' %}" method="get">
-        <input class="form-control form-control-sm me-2 border border-danger" type="search" name="q" placeholder="Tìm kiếm" style="height: 40px; width: 250px">
+        <input class="form-control form-control-sm me-2 border border-danger" type="search" name="q" placeholder="Nhập serial cần tìm ..." style="height: 40px; width: 250px">
         <button class="btn btn-outline-danger" type="submit">Tìm kiếm</button>
       </form>
     </div>
@@ -21,8 +21,38 @@
                         <span class="visually-hidden">Toggle Dropdown</span>
                       </button>
                       <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_asc">Sắp xếp (A-Z)</a></li>
-                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_desc">Sắp xếp (Z-A)</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_desc">Sắp xếp (A-Z)</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_asc">Sắp xếp (Z-A)</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </th>
+                <th>
+                  <div class="btn-group" style="height: 30px;">
+                      <div style="text-align: center;">
+                          Tên hãng
+                          <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                              <span class="visually-hidden">Toggle Dropdown</span>
+                          </button>
+                          <ul class="dropdown-menu">
+                              {% for brand in brands %}
+                                  <li><a class="dropdown-item" href="{% url 'phone_list' %}?brands={{ brand }}">{{ brand }}</a></li>
+                              {% endfor %}
+                          </ul>
+                      </div>
+                  </div>
+                </th>
+              
+                <th> 
+                  <div class="btn-group" style="height: 30px; ">
+                    <div style="text-align: center;">
+                      Bắt đầu bảo hành
+                      <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="visually-hidden">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=start_date_asc">Sắp xếp tăng dần</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=start_date_desc">Sắp xếp giảm dần</a></li>
                       </ul>
                     </div>
                   </div>
@@ -30,31 +60,30 @@
                 <th> 
                   <div class="btn-group" style="height: 30px; ">
                     <div style="text-align: center;">
-                      Tên hãng
+                      Kết thúc bảo hành
                       <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="visually-hidden">Toggle Dropdown</span>
                       </button>
                       <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_brand_asc">Sắp xếp (A-Z)</a></li>
-                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=name_brand_desc">Sắp xếp (Z-A)</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=end_date_asc">Sắp xếp tăng dần</a></li>
+                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=end_date_desc">Sắp xếp giảm dần</a></li>
                       </ul>
                     </div>
                   </div>
                 </th>
-                <th>Ngày bắt đầu bảo hành</th>
-                <th>Ngày kết thúc bảo hành</th>
-                <th> 
-                  <div class="btn-group" style="height: 30px; ">
-                    <div style="text-align: center;">
-                      Nhà cung cấp
-                      <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="visually-hidden">Toggle Dropdown</span>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=NCCand_asc">Sắp xếp (A-Z)</a></li>
-                        <li><a class="dropdown-item" href="{% url 'phone_list' %}?sort=NCC_desc">Sắp xếp (Z-A)</a></li>
-                      </ul>
-                    </div>
+                <th>
+                  <div class="btn-group" style="height: 30px;">
+                      <div style="text-align: center;">
+                          Nhà cung cấp
+                          <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                              <span class="visually-hidden">Toggle Dropdown</span>
+                          </button>
+                          <ul class="dropdown-menu">
+                              {% for ncc in nccs %}
+                                  <li><a class="dropdown-item" href="{% url 'phone_list' %}?nccs={{ ncc }}">{{ ncc }}</a></li>
+                              {% endfor %}
+                          </ul>
+                      </div>
                   </div>
                 </th>
                 <th>
@@ -86,7 +115,7 @@
             <td>{{ phone.NCC }}</td>
             <td>{{ phone.warranty_status }}</td>
             <td>
-              <button class="btn btn-outline-danger" onclick="location.href='{% url 'update_phone' phone_id=phone.id %}'" type="button">Chi tiết</button>
+              <button class="btn btn-outline-danger" onclick="location.href='{% url 'update_phone' phone_id=phone.id %}'" type="button">Cập nhật</button>
               <button class="btn btn-outline-danger" onclick="if (confirm('Bạn có chắc chắn muốn xóa thiết bị này không?')) { location.href=' {% url 'delete_phone' phone_id=phone.id %}'; }" type="button">Xóa</button>
             </td>
           </tr>
@@ -94,26 +123,39 @@
         </tbody>
       </table>
       
-  
-
       <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
-          <li class="page-item"> 
-            <a class="page-link text-danger" href="#" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-          <li class="page-item"><a class="page-link text-danger" href="#">1</a></li>
-          <li class="page-item"><a class="page-link text-danger" href="#">2</a></li>
-          <li class="page-item"><a class="page-link text-danger" href="#">3</a></li>
-          <li class="page-item">
-            <a class="page-link text-danger" href="#" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
+            {% if phones.has_previous %}
+                <li class="page-item">
+                    <a class="page-link text-danger" href="{% url 'phone_list' %}?page={{ phones.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+            {% for num in phones.paginator.page_range %}
+                {% if num == phones.number %}
+                    <li class="page-item active">
+                        <a class="page-link text-danger bg-light" href="{% url 'phone_list' %}?page={{ num }}&sort={{ sort_param }}">{{ num }}</a>
+                    </li>
+                {% elif num == phones.number|add:'-1' or num == phones.number|add:'1' %}
+                    <li class="page-item">
+                        <a class="page-link text-danger" href="{% url 'phone_list' %}?page={{ num }}&sort={{ sort_param }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if phones.has_next %}
+                <li class="page-item">
+                    <a class="page-link text-danger" href="{% url 'phone_list' %}?page={{ phones.next_page_number }}&sort={{ sort_param }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
         </ul>
-      </nav>
+    </nav>
     </div>
+    
+        
     
 {% endblock %}
 

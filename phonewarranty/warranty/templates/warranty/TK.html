@@ -2,104 +2,138 @@
 {% load static %}
 
 {% block content %}
-    <div class="row mt-11" style="margin-top: 30px; margin-left: 50px; width: 95%;">
-            <div class="col-md-4" style="margin-left: 20px">
-                <h5 style="text-align: center; margin-bottom: 20px;">Số lượng thiết bị gửi bảo hành theo hãng</h5>
-                <canvas id="brandChart" width="400" height="250"></canvas>
-                <script>
-                    var brandCtx = document.getElementById('brandChart').getContext('2d');
-                    var brandChart = new Chart(brandCtx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: [{% for brand in brands %}  '{{ brand.phone__name_brand }}',  {% endfor %}],
-                            datasets: [{
-                                data: [{% for brand in brands %}  {{ brand.name_brand_count }},  {% endfor %}],
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(0, 255, 0, 0.2)',
-                                    'rgba(255, 255, 0, 0.2)',
-                                    'rgba(255, 0, 255, 0.2)',
-                                    'rgba(0, 255, 255, 0.2)',
-                                    'rgba(0, 0, 255, 0.2)',
-                                    'rgba(255, 0, 0, 0.2)',
-                                ],
-                            }]
-                        },
-                    });
-                </script>
-            </div>
-            <div class="col-md-7" style="margin-left: 50px;">
-                <h5 style="text-align: center; margin-bottom: 20px;">Chi tiết số lượng các thiết bị gửi bảo hành của mỗi hãng</h5>
-                <div style="margin-left: 45px;">
-                    <label for="select-brand">Chọn hãng:</label>
-                    <select id="select-brand" name="select-brand" onchange="updateNameChart()">
+<h4 style=" margin-left: 20px; margin-top: 10px;">Thống kê thiết bị </h4>
+    
+    <div class="row mt-12" style="margin: 0 auto; width: 95%;">
+        <div class="col-md-4" style="margin-left: 20px; margin-top: 60px;">
+            <canvas id="brandChart" width="400" height="250"></canvas>
+            <script>
+                var brandCtx = document.getElementById('brandChart').getContext('2d');
+                var brandChart = new Chart(brandCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [{% for ncc in nccs %}  '{{ ncc.NCC }}',  {% endfor %}],
+                        datasets: [{
+                            data: [{% for ncc in nccs %}  {{ ncc.name_count }},  {% endfor %}],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(0, 255, 0, 0.2)',
+                                'rgba(255, 255, 0, 0.2)',
+                                'rgba(255, 0, 255, 0.2)',
+                                'rgba(0, 255, 255, 0.2)',
+                                'rgba(0, 0, 255, 0.2)',
+                                'rgba(255, 0, 0, 0.2)',
+                            ],
+                        }]
+                    },
+                });
+            </script>
+        </div>
+
+
+        <div class="col-md-7" style="margin-left: 30px;">
+            <div style="margin-top: 10px; margin-left: 10px; display: flex; margin-bottom: 30px;">
+                <div>
+                    <label for="select-nccs">Chọn nhà cung cấp:</label>
+                    <select id="select-nccs" name="select-nccs" onchange="updateNameChart()">
                         <option value="all">Tất cả</option>
-                        {% for brand in brands %}
-                        <option value="{{ brand.phone__name_brand }}">{{ brand.phone__name_brand }}</option>
+                        {% for ncc in nccs %}
+                        <option value="{{ ncc.NCC }}">{{ ncc.NCC }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <canvas style="margin-top: 10px;" id="nameChart" width="400" height="250"></canvas>
-                <script>
-                    var nameCtx = document.getElementById('nameChart').getContext('2d');
-                    var nameChart = new Chart(nameCtx, {
-                        type: 'bar',
-                        data: {
-                            labels: [{% for name in names %}  '{{ name.phone__name }}',  {% endfor %}],
-                            datasets: [{
-                                label: 'Số lượng',
-                                data: [{% for name in names %}  {{ name.name_count }},  {% endfor %}],
-                                backgroundColor: [
-                                    'rgba(255, 99, 132, 0.2)',
-                                    'rgba(54, 162, 235, 0.2)',
-                                    'rgba(0, 255, 0, 0.2)',
-                                    'rgba(255, 255, 0, 0.2)',
-                                    'rgba(255, 0, 255, 0.2)',
-                                    'rgba(0, 255, 255, 0.2)',
-                                    'rgba(0, 0, 255, 0.2)',
-                                    'rgba(255, 0, 0, 0.2)',
-                                ],
-                                borderColor: [
-                                    'rgba(255, 99, 132, 1)',
-                                    'rgba(54, 162, 235, 1)',
-                                    'rgba(0, 255, 0, 1)',
-                                    'rgba(255, 255, 0, 1)',
-                                    'rgba(255, 0, 255, 1)',
-                                    'rgba(0, 255, 255, 1)',
-                                    'rgba(0, 0, 255, 1)',
-                                    'rgba(255, 0, 0, 1)',
-                                ],
-                            }]
-                        },
-                    });
-                </script>
-                <script>
-                    function updateNameChart() {
-                        var brandSelected = document.getElementById("select-brand").value;
-                        var url = "{% url 'ajax_get_names_by_brand' %}";
-                        if (brandSelected === 'all') {
-                            url = "{% url 'ajax_get_all_names' %}";
-                        }
-                        $.ajax({
-                            url: url,
-                            data: {
-                                'brand': brandSelected
-                            },
-                            dataType: 'json',
-                            success: function (data) {
-                                nameChart.data.labels = data.labels;
-                                nameChart.data.datasets[0].data = data.data;
-                                nameChart.update();
-                            }
-                        });
-                    }
-                    </script>                
+                <div>
+                    <label style="margin-left: 30px;" for="select-brand">Chọn hãng:</label>
+                    <select id="select-brand" name="select-brand" onchange="updateNameChart()">
+                        <option value="all">Tất cả</option>
+                        {% for brand in brands %}
+                        <option value="{{ brand.name_brand }}">{{ brand.name_brand }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label style="margin-left: 30px;" for="select-status">Chọn tình trạng:</label>
+                    <select id="select-status" name="select-status" onchange="updateNameChart()">
+                        <option value="all">Tất cả</option>
+                        <option value="under_warranty">Còn hạn bảo hành</option>
+                        <option value="expired_warranty">Hết hạn bảo hành</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        </div>
+        <canvas style="margin-top: 10px;" id="nameChart" width="400" height="250"></canvas>
+        <script>
+            var nameCtx = document.getElementById('nameChart').getContext('2d');
+            var nameChart = new Chart(nameCtx, {
+                type: 'bar',
+                data: {
+                    labels: [{% for name in names %}  '{{ name.name }}',  {% endfor %}],
+                    datasets: [{
+                        label: 'Số lượng',
+                        data: [{% for name in names %}  {{ name.name_count }},  {% endfor %}],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(0, 255, 0, 0.2)',
+                            'rgba(255, 255, 0, 0.2)',
+                            'rgba(255, 0, 255, 0.2)',
+                            'rgba(0, 255, 255, 0.2)',
+                            'rgba(0, 0, 255, 0.2)',
+                            'rgba(255, 0, 0, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(0, 255, 0, 1)',
+                            'rgba(255, 255, 0, 1)',
+                            'rgba(255, 0, 255, 1)',
+                            'rgba(0, 255, 255, 1)',
+                            'rgba(0, 0, 255, 1)',
+                            'rgba(255, 0, 0, 1)',
+                        ],
+                    }]
+                },
+            });
+        </script>
+        <script>
+            function updateNameChart() {
+                var nccSelected = document.getElementById("select-nccs").value;
+                var brandSelected = document.getElementById("select-brand").value;
+                var statusSelected = document.getElementById("select-status").value;
+                var url = "{% url 'ajax_get_names_by_brand_ncc_and_warranty_status' %}";
+                if (nccSelected === 'all' && brandSelected === 'all' && statusSelected === 'all') {
+                    url = "{% url 'ajax_get_all_names' %}";
+                } else if (nccSelected === 'all') {
+                    url = "{% url 'ajax_get_names_by_brand_and_warranty_status' %}";
+                } else if (brandSelected === 'all') {
+                    url = "{% url 'ajax_get_names_by_ncc_and_warranty_status' %}";
+                } else if (statusSelected === 'all') {
+                    url = "{% url 'ajax_get_names_by_brand_and_ncc' %}";
+                } else if (nccSelected === 'all' && brandSelected === 'all') {
+                    url = "{% url 'ajax_get_names_by_warranty_status' %}";
+                } else if (nccSelected === 'all' && statusSelected === 'all') {
+                    url = "{% url 'ajax_get_names_by_brand' %}";
+                } else if (brandSelected === 'all' && statusSelected === 'all') {
+                    url = "{% url 'ajax_get_names_by_ncc' %}";
+                }
+                $.ajax({
+                    url: url,
+                    data: {
+                        'status': statusSelected,
+                        'ncc': nccSelected,
+                        'brand': brandSelected
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        nameChart.data.labels = data.labels;
+                        nameChart.data.datasets[0].data = data.data;
+                        nameChart.update();
+                    }
+                });
+            }
+        </script>              
     </div>
 
-    
+
 {% endblock %}
 

@@ -4,8 +4,8 @@
     <h4 style="margin-left: 40px; margin-top: 20px">Danh sách thiết bị nhận bảo hành</h4>
     <div style="margin-left: 40px; margin-top: 20px">
       <form class="d-flex" action="{% url 'search_warranty' %}" method="get">
-        <input class="form-control form-control-sm me-2 border border-danger" type="search" name="q" placeholder="Tìm kiếm" style="height: 40px; width: 250px">
-        <button class="btn btn-outline-danger" type="submit">Tìm kiếm</button>
+        <input class="form-control form-control-sm me-2 border border-danger" type="search" name="q" placeholder="Nhập tên KH hoặc SDT cần tìm ..." style="height: 40px; width: 250px">
+        <button class="btn btn-outline-danger" type="submit">Tìm kiếm </button>
       </form>
     </div>
     <div class="table-responsive" style="margin: auto; margin-top: 20px; width: 95%;">
@@ -27,8 +27,21 @@
                 </div>
               <th>Số điện thoại</th>
               <th>
-                Tên Hãng
-              <th>
+                <div class="btn-group" style="height: 30px;">
+                    <div style="text-align: center;">
+                        Tên hãng
+                        <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% for brand in brands %}
+                                <li><a class="dropdown-item" href="{% url 'warranty_list' %}?brands={{ brand }}">{{ brand }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+              </th>
+              <th> 
                 <div class="btn-group" style="height: 30px; ">
                   <div style="text-align: center;">
                     Tên thiết bị
@@ -42,20 +55,47 @@
                   </div>
                 </div>
               </th>
-              <th>Ngày nhận bảo hành</th>
-              <th>Ngày trả bảo hành</th>
-              <th>
+              <th> 
                 <div class="btn-group" style="height: 30px; ">
                   <div style="text-align: center;">
-                    Nhà cung cấp
+                    Nhận bảo hành
                     <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                       <span class="visually-hidden">Toggle Dropdown</span>
                     </button>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=ncc_asc">Sắp xếp(A-Z)</a></li>
-                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=ncc_desc">Sắp xếp (Z-A)</a></li>
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=ngaynhan_asc">Sắp xếp tăng dần</a></li>
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=ngaynhan_desc">Sắp xếp giảm dần</a></li>
                     </ul>
                   </div>
+                </div>
+              </th>
+              <th> 
+                <div class="btn-group" style="height: 30px; ">
+                  <div style="text-align: center;">
+                    Trả bảo hành
+                    <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                      <span class="visually-hidden">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=ngaytra_asc">Sắp xếp tăng dần</a></li>
+                      <li><a class="dropdown-item" href="{% url 'warranty_list' %}?sort=ngaytra_desc">Sắp xếp giảm dần</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </th>
+              <th>
+                <div class="btn-group" style="height: 30px;">
+                    <div style="text-align: center;">
+                        Nhà cung cấp
+                        <button style="margin-left: 5px;" type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% for ncc in nccs %}
+                                <li><a class="dropdown-item" href="{% url 'warranty_list' %}?nccs={{ ncc }}">{{ ncc }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
               </th>
               <th></th>
@@ -72,30 +112,43 @@
             <td>{{ warranty.ngaytra }}</td>
             <td>{{ warranty.phone.NCC }}</td>
             <td>
-              <button class="btn btn-outline-danger" onclick="location.href='{% url 'update_warranty' warranty.id %}'" type="button">Chi tiết</button>
+              <button class="btn btn-outline-danger" onclick="location.href='{% url 'update_warranty' warranty.id %}'" type="button">Cập nhật</button>
               <button class="btn btn-outline-danger" onclick="if (confirm('Bạn có chắc chắn muốn xóa bảo hành này không?')) { location.href=' {% url 'delete_warranty' warranty.id %}'; }" type="button">Xóa</button>
             </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+
       <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-center">
-          <li class="page-item">
-            <a class="page-link text-danger" href="#" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-            </a>
-          </li>
-          <li class="page-item"><a class="page-link text-danger" href="#">1</a></li>
-          <li class="page-item"><a class="page-link text-danger" href="#">2</a></li>
-          <li class="page-item"><a class="page-link text-danger" href="#">3</a></li>
-          <li class="page-item">
-            <a class="page-link text-danger" href="#" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-            </a>
-          </li>
+            {% if warranties.has_previous %}
+                <li class="page-item">
+                    <a class="page-link text-danger" href="{% url 'warranty_list' %}?page={{ warranties.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+            {% for num in warranties.paginator.page_range %}
+                {% if num == warranties.number %}
+                    <li class="page-item active">
+                        <a class="page-link text-danger bg-light" href="{% url 'warranty_list' %}?page={{ num }}&sort={{ sort_param }}">{{ num }}</a>
+                    </li>
+                {% elif num == warranties.number|add:'-1' or num == warranties.number|add:'1' %}
+                    <li class="page-item">
+                        <a class="page-link text-danger" href="{% url 'warranty_list' %}?page={{ num }}&sort={{ sort_param }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% if warranties.has_next %}
+                <li class="page-item">
+                    <a class="page-link text-danger" href="{% url 'warranty_list' %}?page={{ warranties.next_page_number }}&sort={{ sort_param }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
         </ul>
-      </nav>
+    </nav>
     </div>
     
     

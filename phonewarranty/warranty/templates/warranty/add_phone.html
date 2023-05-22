@@ -4,22 +4,87 @@
 
 
 {% block content %}
-<section class="vh-100">
-  <div class="container h-100">
+<section class="vh-100 gradient-custom" style="margin-bottom: 30px;">
+  <div class="container py-5 h-100">
     <div class="row justify-content-center align-items-center h-100">
       <div class="col-12 col-lg-9 col-xl-7">
-        <div class="card shadow-2-strong card-registration" style="border-radius: 15px;">
-          <div class="card-body p-4 p-md-5" style="background-color: #eccbd1;">
+        <div class="card shadow-2-strong card-registration" style="border-radius: 15px; background-color: pink;">
+          <div class="card-body p-4 p-md-5">
             <h3 class="mb-4 pb-2 pb-md-0 mb-md-5">Thêm Thiết Bị</h3>
-            <div class="box" style="margin-top: 20px; margin-bottom: 20px;">
-              <h4 style="text-align: center; margin-top: 10px; margin-bottom: 10px;">Thêm Thiết Bị</h4>
-              <form style="margin-left: 190px;" method="POST">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button class="btn btn-outline-danger" type="submit">Thêm</button>
-                <button class="btn btn-outline-danger" onclick="location.href='{% url 'phone_list'%}'" type="button">Hủy</button>
-              </form>
-            </div>
+            <form method="POST">
+              {% csrf_token %}
+
+              <div class="row">
+                <div class="col-md-5 mb-4">
+
+                  <div class="form-outline">
+                    <label class="form-label" for="serial">Số Serial:</label>
+                    <input type="text" name="serial" id="serial" class="form-control form-control-lg" />
+                  </div>
+
+                </div>
+                <div class="col-md-7 mb-4">
+                  <div class="form-outline">
+                    <label class="form-label" for="ncc">Nhà cung cấp:</label>
+                    <select name="NCC" id="ncc" class="form-control form-control-lg">
+                        {% for ncc in nccs %}
+                        <option value="{{ ncc.NCC }}">{{ ncc.NCC }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-7 mb-4 d-flex align-items-center">
+
+                  <div class="form-outline datepicker w-100">
+                    <label for="name" class="form-label">Tên thiết bị:</label>
+                    <input name="name" type="text" class="form-control form-control-lg" id="name" />
+                  </div>
+
+                </div>
+                <div class="col-md-5 mb-4 d-flex align-items-center">
+
+                  <div class="form-outline datepicker w-100">
+                    <label for="brand" class="form-label">Tên hãng:</label>
+                    <input name="name_brand" type="text" class="form-control form-control-lg" id="brand" />
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-6 mb-4 pb-2">
+
+                  <div class="form-outline">
+                    <label class="form-label" for="start">Bắt đầu bảo hành:</label>
+                    <input name="start_date" type="date" id="start" class="form-control form-control-lg" />
+                  </div>
+
+                </div>
+                <div class="col-md-6 mb-4 pb-2">
+
+                  <div class="form-outline">
+                    <label class="form-label" for="end">Kết thúc bảo hành:</label>
+                    <input name="end_date" type="date" id="end" class="form-control form-control-lg" />
+                  </div>
+
+                </div>
+              </div>
+
+                <div class="form-outline">
+                    <label class="form-label" for="note">Mô tả:</label>
+                    <input style="width: 100%; height: 100px;" name="description" type="text" id="note" class="form-control form-control-lg" />
+                </div>
+              
+
+              <div class="mt-4 pt-10">
+                <button style="width: 100px; height: 40px;" class="btn btn-outline-danger" type="submit">Thêm</button>
+                <button style="width: 80px;" class="btn btn-outline-danger" onclick="location.href='{% url 'phone_list'%}'" type="button">Hủy</button>
+              </div>
+
+            </form>
           </div>
         </div>
       </div>
